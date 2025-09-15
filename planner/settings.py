@@ -20,19 +20,54 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
+# SECURITY
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-unsafe-key')
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*0e2*#^r4(mj^a8r=af#1&be#9$1zt_s3tvs+rnnjr&gh^^+k#'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# CORS
+if DEBUG:
+    # For development: allow everything
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # For production: allow only your frontend
+    CORS_ALLOWED_ORIGINS = [
+        "https://trip-app-planner.vercel.app",
+    ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
-ALLOWED_HOSTS = []
+ROOT_URLCONF = 'planner.urls'
+
+
+# Allowed hosts
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'trips',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,9 +79,25 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    }
+}
 # GEOAPIFY_TOKEN = config('GEOAPIFY_TOKEN', default='')
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +105,24 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# Add CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
+
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 ROOT_URLCONF = 'planner.urls'
