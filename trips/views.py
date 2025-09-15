@@ -1,4 +1,6 @@
 from rest_framework.response import Response
+from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
 import logging
@@ -59,3 +61,6 @@ def simulate_trip(request):
             {'error': 'Internal server error', 'details': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+def home(request):
+    return render(request, 'index.html')        
