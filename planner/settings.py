@@ -56,11 +56,11 @@ ROOT_URLCONF = 'planner.urls'
 
 
 # Allowed hosts
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    default='localhost,127.0.0.1',
-    cast=lambda v: [s.strip() for s in v.split(',')]
-)
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'planner-bi1x.onrender.com',  # your Render domain
+]
 
 
 # Application definition
